@@ -1,20 +1,22 @@
 from tkinter import *
 import PIL.Image, PIL.ImageTk
-import cv2
-import time
+import cv2, time
 import globals
 from logMessage import *
 from toggleButtons import *
 from vision import *
+from input_listener import *
+from threading import Thread
+from multiprocessing import Process
 
 class SimpleApp(Tk):
     def __init__(self, parent):
         Tk.__init__(self, parent)
         self.parent = parent
-        input_display = Text(self)
+        self.input_display = Text(self)
         self.vid_source_front = 0
         self.vid_source_rear = 0
-        self.initialize(input_display)
+        self.initialize(self.input_display)
 
     def initialize(self, display):
         globals.initialize()
@@ -63,6 +65,9 @@ class SimpleApp(Tk):
 
         self.delay = 15
         self.update()
+        
+        self.listener_thread = Thread(target = listener, args =(display, ))
+        self.listener_thread.start()
 
     def update(self):
         ret, frame = self.video_front.get_frame(0)
@@ -79,6 +84,14 @@ class SimpleApp(Tk):
             self.back_video_display.create_image(0, 0, image = self.photo_back, anchor = NW)
         
         self.after(self.delay, self.update)
+
+    def _close_thread(self):
+        globals.program_power = False
+        self.video_front.vid.release()
+        # self.listener_thread.join()
+        # self.video_front.release()
+        root.destroy()
+        exit()
         
         
 
@@ -88,4 +101,6 @@ if __name__ == "__main__":
     screen_width = int(root.winfo_screenwidth() / 1.5)
     screen_height = int(root.winfo_screenheight() / 1.5)
     root.geometry(str(screen_width) + "x" + str(screen_height))
+    root.protocol("WM_DELETE_WINDOW", root._close_thread)
     root.mainloop()
+    
