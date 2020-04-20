@@ -6,6 +6,7 @@ import globals
 from logMessage import *
 from toggleButtons import *
 
+# Switches rear video filters
 def switch_vid_view(display_log):
     if (globals.vid_view == 1):
         globals.vid_view = 2
@@ -14,7 +15,9 @@ def switch_vid_view(display_log):
 
     logMessage(display_log, "Rear video switched")
     
-
+# Needs some simplifying when full camera system is setup
+# Should be used only for front camera
+# No filtering needed
 class MyVideoCaptureFront:
     def __init__(self, video_source=0):
         # Open the video source
@@ -52,6 +55,9 @@ class MyVideoCaptureFront:
         if self.vid.isOpened():
             self.vid.release()
 
+# Should take minimal work but will need some refactoring come full camera system
+# Rear camera only needs canny edge detector and contouring, beyond that it'll just be
+# working with camera and machine to get best picture for user
 class MyVideoCaptureBack:
     def __init__(self, video_source=0):
         # Open the video source

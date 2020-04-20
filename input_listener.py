@@ -4,6 +4,9 @@ from tkinter import *
 import time
 import globals
 
+# Used to listen for controller input
+# Has some edge case issues (shutdown process in main)
+# Worth looking into
 def listener(display_log):
     pad = inputs.devices.gamepads
     controller_connected = False
